@@ -6,6 +6,8 @@ A simple Tetris game for Android 9 AR glasses with monochrome green display and 
 ## Technical Constraints
 - **Platform**: Android 9 (API Level 28)
 - **Language**: Kotlin
+- **SoC**: Unisoc (32-bit ARM architecture)
+- **Architecture**: armeabi-v7a (32-bit ARM)
 - **Display**: Grayscale (green tinted), 640x480 resolution (horizontal x vertical)
 - **Input**: Touch sensor (swipe left/right only, single tap, double tap, long press)
 - **No Sound**: Audio not available

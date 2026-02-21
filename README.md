@@ -10,6 +10,8 @@ A simple Tetris game designed for AR glasses with grayscale display and touch se
 
 ## Project Specifications
 - **Target Device**: AR Glasses (Android 9)
+- **SoC**: Unisoc (32-bit ARM)
+- **Architecture**: armeabi-v7a (32-bit)
 - **Display**: 640x480 Grayscale (green tinted)
 - **Frame Rate**: 30 FPS
 - **Input Methods**:

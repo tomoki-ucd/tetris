@@ -15,6 +15,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Target 32-bit ARM architecture for Unisoc SoC
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a"))
+        }
     }
 
     buildTypes {
