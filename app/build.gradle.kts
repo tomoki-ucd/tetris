@@ -16,9 +16,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Target 32-bit ARM architecture for Unisoc SoC
+        // Support both 32-bit and 64-bit for development/testing
+        // For production release on AR glasses, can be restricted to armeabi-v7a only
         ndk {
-            abiFilters.addAll(listOf("armeabi-v7a"))
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
     }
 
