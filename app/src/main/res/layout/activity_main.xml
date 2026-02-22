@@ -4,6 +4,9 @@
     android:layout_height="match_parent"
     android:background="@color/black">
 
-    <!-- TetrisView will be added programmatically here -->
+    <com.arglass.tetris.views.TetrisView
+        android:id="@+id/tetrisView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </FrameLayout>
