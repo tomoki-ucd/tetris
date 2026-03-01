@@ -17,7 +17,8 @@ A simple Tetris game designed for AR glasses with grayscale display and touch se
 - **Input Methods**:
   - DPAD Left/Right: Move tetromino
   - Single Tap (KEYCODE_ENTER): Rotate tetromino / Start game
-  - Double Tap (KEYCODE_BACK): Quit to menu (when playing)
+  - Double Tap (KEYCODE_BACK): Also treated as single tap (rotate / start)
+  - Long Press (KEYCODE_ENTER held ≥ 3s): Return to menu (when playing)
 
 ## Setup Instructions
 
@@ -86,8 +87,9 @@ All input is delivered as `KeyEvent`s by the AR glasses hardware — there is no
 |-----|--------|
 | DPAD Left | Move piece left |
 | DPAD Right | Move piece right |
-| KEYCODE_ENTER (single tap) | Rotate piece / Start game / Restart |
-| KEYCODE_BACK (double tap) | Quit to menu (during play) / Exit app (from menu/game-over) |
+| KEYCODE_ENTER (tap) | Rotate piece / Start game / Restart |
+| KEYCODE_ENTER (hold ≥ 3s) | Return to menu (during play) |
+| KEYCODE_BACK (double tap) | Same as single tap (rotate / start) |
 
 ## Game Features
 - Standard Tetris gameplay (10x20 board)
