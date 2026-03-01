@@ -15,7 +15,7 @@ import com.arglass.tetris.views.TetrisView
  * Target: Android 9 (API 28) AR Glasses — 640×480 grayscale display.
  *
  * Game loop: 30 FPS using a Handler-based repeating tick.
- * Input:     GestureHandler forwarding swipe/tap/long-press to GameEngine.
+ * Input:     KeyEvents (DPAD_LEFT/RIGHT, KEYCODE_ENTER, KEYCODE_BACK) forwarded to GameEngine.
  */
 class MainActivity : AppCompatActivity() {
 

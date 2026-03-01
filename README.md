@@ -15,10 +15,9 @@ A simple Tetris game designed for AR glasses with grayscale display and touch se
 - **Display**: 640x480 Grayscale (green tinted)
 - **Frame Rate**: 30 FPS
 - **Input Methods**:
-  - Swipe Left/Right: Move tetromino
-  - Single Tap: Rotate tetromino / Start game
-  - Long Press: Quit to menu
-  - Double Tap: (Reserved)
+  - DPAD Left/Right: Move tetromino
+  - Single Tap (KEYCODE_ENTER): Rotate tetromino / Start game
+  - Double Tap (KEYCODE_BACK): Quit to menu (when playing)
 
 ## Setup Instructions
 
@@ -57,7 +56,7 @@ app/
 │   │   │   ├── Tetromino.kt            # Block pieces
 │   │   │   └── ScoreManager.kt         # Scoring logic
 │   │   └── input/
-│   │       └── GestureHandler.kt       # Touch input processing
+│   │       └── GestureHandler.kt       # (inactive — all input handled via KeyEvents in MainActivity)
 │   ├── res/
 │   │   ├── layout/activity_main.xml
 │   │   ├── values/strings.xml
@@ -67,33 +66,32 @@ app/
 ```
 
 ## Development Status
-**Current Phase**: 1 of 7 Complete ✅
+**Current Phase**: 6 of 7 Complete ✅
 
-- [x] **Phase 1**: Project setup - COMPLETE
-  - [x] Project structure created
-  - [x] Android configuration for API 28
-  - [x] Build system configured (Gradle 8.7, Java 21)
-  - [x] Multi-architecture support (32-bit + 64-bit)
-  - [x] Successfully tested on emulator
-- [ ] **Phase 2**: Core game logic
-- [ ] **Phase 3**: Rendering system
-- [ ] **Phase 4**: Input handling
-- [ ] **Phase 5**: Game loop integration
-- [ ] **Phase 6**: Polish & optimization
+- [x] **Phase 1**: Project setup
+- [x] **Phase 2**: Core game logic
+- [x] **Phase 3**: Rendering system
+- [x] **Phase 4**: Input handling (KeyEvent-based for AR glasses hardware)
+- [x] **Phase 5**: Game loop integration
+- [x] **Phase 6**: Polish & optimization (difficulty levels, game states)
 - [ ] **Phase 7**: Testing & deployment
 
 See `DEVELOPMENT_PLAN.md` for detailed roadmap and `PROGRESS.md` for current status.
 
 ## Controls
-| Input | Action |
-|-------|--------|
-| Swipe Left | Move piece left |
-| Swipe Right | Move piece right |
-| Single Tap | Rotate piece clockwise |
-| Long Press | Quit to menu |
+
+All input is delivered as `KeyEvent`s by the AR glasses hardware — there is no touch/swipe handling.
+
+| Key | Action |
+|-----|--------|
+| DPAD Left | Move piece left |
+| DPAD Right | Move piece right |
+| KEYCODE_ENTER (single tap) | Rotate piece / Start game / Restart |
+| KEYCODE_BACK (double tap) | Quit to menu (during play) / Exit app (from menu/game-over) |
 
 ## Game Features
 - Standard Tetris gameplay (10x20 board)
+- Three difficulty levels: Easy (1s drop), Medium (0.5s drop), Hard (0.33s drop)
 - Score tracking
 - Next piece preview
 - Grayscale graphics optimized for AR display
