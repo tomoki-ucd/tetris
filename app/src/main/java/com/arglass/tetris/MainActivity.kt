@@ -3,6 +3,7 @@ package com.arglass.tetris
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.KeyEvent
 import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
 import com.arglass.tetris.game.GameEngine
@@ -58,6 +59,23 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(gameLoopRunnable)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            engine.onTap()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun onBackPressed() {
+        if (engine.state == GameEngine.State.PLAYING) {
+            engine.onLongPress()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
