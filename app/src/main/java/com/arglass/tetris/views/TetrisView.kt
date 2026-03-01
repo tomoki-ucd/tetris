@@ -116,13 +116,39 @@ class TetrisView @JvmOverloads constructor(
     }
 
     private fun drawMenu(canvas: Canvas) {
+        val eng = engine ?: return
         textPaint.textAlign = Paint.Align.CENTER
         val cx = width / 2f
         val cy = height / 2f
+
+        // Title
         textPaint.textSize = cellSize * 1.4f
+        textPaint.color = Color.WHITE
         canvas.drawText("TETRIS", cx, cy - cellSize * 2, textPaint)
+
+        // Level selector: draw each level label; active = white, inactive = gray
         textPaint.textSize = cellSize * 0.8f
-        canvas.drawText("TAP TO START", cx, cy, textPaint)
+        val levels = GameEngine.Level.entries
+        val selected = eng.selectedLevel
+        val spacing = cellSize * 2.8f
+        val totalWidth = spacing * (levels.size - 1)
+        val startX = cx - totalWidth / 2f
+        val levelY = cy
+
+        // Draw navigation arrows
+        textPaint.color = Color.argb(255, 160, 160, 160)
+        canvas.drawText("<", startX - cellSize * 1.5f, levelY, textPaint)
+        canvas.drawText(">", startX + totalWidth + cellSize * 1.5f, levelY, textPaint)
+
+        levels.forEachIndexed { i, level ->
+            textPaint.color = if (level == selected) Color.WHITE else Color.argb(255, 100, 100, 100)
+            canvas.drawText(level.name, startX + i * spacing, levelY, textPaint)
+        }
+
+        // Prompt
+        textPaint.color = Color.WHITE
+        textPaint.textSize = cellSize * 0.75f
+        canvas.drawText("TAP TO START", cx, cy + cellSize * 1.5f, textPaint)
     }
 
     private fun drawGame(canvas: Canvas, eng: GameEngine) {

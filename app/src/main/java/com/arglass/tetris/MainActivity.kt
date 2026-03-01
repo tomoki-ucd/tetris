@@ -62,11 +62,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_ENTER) {
-            engine.onTap()
-            return true
+        return when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_LEFT  -> { engine.onSwipeLeft();  true }
+            KeyEvent.KEYCODE_DPAD_RIGHT -> { engine.onSwipeRight(); true }
+            KeyEvent.KEYCODE_ENTER      -> { engine.onTap();        true }
+            else -> super.onKeyDown(keyCode, event)
         }
-        return super.onKeyDown(keyCode, event)
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

@@ -11,6 +11,15 @@ class GameEngine {
 
     enum class State { MENU, PLAYING, GAME_OVER }
 
+    enum class Level(val dropIntervalMs: Long) {
+        EASY(1000L), MEDIUM(500L), HARD(333L);
+
+        fun next(): Level = entries[(ordinal + 1) % entries.size]
+        fun prev(): Level = entries[(ordinal - 1 + entries.size) % entries.size]
+    }
+
+    var selectedLevel: Level = Level.EASY
+
     val board = Board()
     val scoreManager = ScoreManager()
 
@@ -23,8 +32,8 @@ class GameEngine {
     var nextPiece: Tetromino = Tetromino.spawnRandom()
         private set
 
-    // Drop timing: piece falls 1 row per DROP_INTERVAL_MS milliseconds.
-    private val DROP_INTERVAL_MS = 1000L
+    // Drop timing: set from selectedLevel at startGame(); piece falls 1 row per dropIntervalMs.
+    private var dropIntervalMs = 1000L
     private var dropAccumulatorMs = 0L
 
     /** Callback invoked whenever the board changes; used to trigger a redraw. */
@@ -35,6 +44,7 @@ class GameEngine {
     fun startGame() {
         board.reset()
         scoreManager.reset()
+        dropIntervalMs = selectedLevel.dropIntervalMs
         nextPiece = Tetromino.spawnRandom()
         spawnNext()
         state = State.PLAYING
@@ -55,8 +65,8 @@ class GameEngine {
         if (state != State.PLAYING) return
 
         dropAccumulatorMs += deltaMs
-        if (dropAccumulatorMs >= DROP_INTERVAL_MS) {
-            dropAccumulatorMs -= DROP_INTERVAL_MS
+        if (dropAccumulatorMs >= dropIntervalMs) {
+            dropAccumulatorMs -= dropIntervalMs
             gravityDrop()
         }
     }
@@ -71,13 +81,19 @@ class GameEngine {
     }
 
     fun onSwipeLeft() {
-        if (state != State.PLAYING) return
-        moveActive(dCol = -1)
+        when (state) {
+            State.MENU -> { selectedLevel = selectedLevel.prev(); onBoardChanged?.invoke() }
+            State.PLAYING -> moveActive(dCol = -1)
+            else -> {}
+        }
     }
 
     fun onSwipeRight() {
-        if (state != State.PLAYING) return
-        moveActive(dCol = 1)
+        when (state) {
+            State.MENU -> { selectedLevel = selectedLevel.next(); onBoardChanged?.invoke() }
+            State.PLAYING -> moveActive(dCol = 1)
+            else -> {}
+        }
     }
 
     fun onLongPress() {
