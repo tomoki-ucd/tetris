@@ -16,6 +16,7 @@ import com.arglass.tetris.views.TetrisView
  *
  * Game loop: 30 FPS using a Handler-based repeating tick.
  * Input:     KeyEvents (DPAD_LEFT/RIGHT, KEYCODE_ENTER, KEYCODE_BACK) forwarded to GameEngine.
+ * Long press: KEYCODE_ENTER held ≥ 3 s is treated as long press (return to menu).
  */
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private val frameIntervalMs = 33L  // ~30 FPS
 
     private var lastTickMs = 0L
+    private var enterKeyDownTimeMs = 0L
+    private val longPressThresholdMs = 3000L
 
     private val gameLoopRunnable = object : Runnable {
         override fun run() {
@@ -63,11 +66,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         return when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_LEFT  -> { engine.onSwipeLeft();  true }
+            KeyEvent.KEYCODE_DPAD_LEFT  -> { engine.onSwipeLeft(); true }
             KeyEvent.KEYCODE_DPAD_RIGHT -> { engine.onSwipeRight(); true }
-            KeyEvent.KEYCODE_ENTER,
-            KeyEvent.KEYCODE_BACK       -> { engine.onTap();        true }
+            KeyEvent.KEYCODE_ENTER      -> {
+                if (event.repeatCount == 0) enterKeyDownTimeMs = System.currentTimeMillis()
+                true
+            }
+            KeyEvent.KEYCODE_BACK       -> { engine.onTap(); true }
             else -> super.onKeyDown(keyCode, event)
+        }
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        return when (keyCode) {
+            KeyEvent.KEYCODE_ENTER -> {
+                val held = System.currentTimeMillis() - enterKeyDownTimeMs
+                if (held >= longPressThresholdMs) engine.onLongPress() else engine.onTap()
+                true
+            }
+            else -> super.onKeyUp(keyCode, event)
         }
     }
 
