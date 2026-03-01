@@ -107,6 +107,47 @@ Android project successfully created, configured, and tested. App launches witho
 
 ---
 
+## ✅ Input Algorithm Fix: AR Glasses Hardware Compatibility - COMPLETED
+
+### Background
+The original input implementation was written assuming the AR glasses' touch sensor would deliver all gestures as `MotionEvent`s through the standard Android touch pipeline. Based on this assumption, all input was handled exclusively in `GestureHandler.kt` using `GestureDetector`.
+
+### What the hardware actually does
+
+| Gesture | Event emitted by hardware |
+|---------|--------------------------|
+| Swipe left / right | `MotionEvent` (standard touch) |
+| Single tap | `KeyEvent(KEYCODE_ENTER)` |
+| Double tap | `KeyEvent(KEYCODE_BACK)` |
+
+### Problems with the original algorithm
+
+**Single tap was silently broken.**
+`GestureDetector.onSingleTapConfirmed()` only fires in response to `MotionEvent`s. The hardware emits `KEYCODE_ENTER` for a tap, which is a `KeyEvent` — a completely separate Android input channel. The `onTouchEvent` path never received it, so rotate / start / restart never triggered on the physical device.
+
+**Double tap / back had mismatched behaviour.**
+The original design mapped long press → "quit to menu" (`engine.onLongPress()`). On the hardware, however, long press is not a supported gesture. Double tap sends `KEYCODE_BACK`, which by default is handled by `Activity.onBackPressed()` and exits the app entirely — bypassing the in-game menu state and offering no way to return to the menu mid-game.
+
+### Changes made (`MainActivity.kt`)
+
+**Added `onKeyDown(KEYCODE_ENTER)` → `engine.onTap()`**
+Overriding `onKeyDown` intercepts the `KeyEvent` channel, which is where the hardware delivers single-tap. Calling `engine.onTap()` restores the intended behaviour: rotate the active piece during play, or start / restart the game from the menu and game-over screens.
+
+**Added `onBackPressed()` with state-aware routing**
+When `KEYCODE_BACK` arrives (double tap on hardware):
+- If the game is in `PLAYING` state → call `engine.onLongPress()`, which returns to the menu. The app stays alive and the player can start a new game.
+- Otherwise (MENU or GAME_OVER) → call `super.onBackPressed()`, which exits the app as expected.
+
+This preserves the original intent of "quit to menu" while correctly mapping it to the only available hardware gesture that can serve that purpose.
+
+**Swipe handling was left unchanged.**
+The hardware sends swipe as `MotionEvent`, which is exactly what `GestureHandler`'s `onFling` expects. No changes were needed there.
+
+### Files changed
+- `MainActivity.kt` — added `onKeyDown` and `onBackPressed` overrides
+
+---
+
 ## 📋 Phase 7: Testing & Deployment - PENDING
 
 ### Tasks to Complete
@@ -152,4 +193,4 @@ app/src/test/java/com/arglass/tetris/game/
 - **Target SDK**: Android 9 (API 28)
 
 ## Last Updated
-2026-02-22 - Phases 2–6 completed; all 30 unit tests passing
+2026-03-01 - Fixed input algorithm for AR glasses hardware (KEYCODE_ENTER / KEYCODE_BACK)
