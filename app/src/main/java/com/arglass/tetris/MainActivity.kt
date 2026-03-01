@@ -65,17 +65,9 @@ class MainActivity : AppCompatActivity() {
         return when (keyCode) {
             KeyEvent.KEYCODE_DPAD_LEFT  -> { engine.onSwipeLeft();  true }
             KeyEvent.KEYCODE_DPAD_RIGHT -> { engine.onSwipeRight(); true }
-            KeyEvent.KEYCODE_ENTER      -> { engine.onTap();        true }
+            KeyEvent.KEYCODE_ENTER,
+            KeyEvent.KEYCODE_BACK       -> { engine.onTap();        true }
             else -> super.onKeyDown(keyCode, event)
-        }
-    }
-
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun onBackPressed() {
-        if (engine.state == GameEngine.State.PLAYING) {
-            engine.onLongPress()
-        } else {
-            super.onBackPressed()
         }
     }
 
