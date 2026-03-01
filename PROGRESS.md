@@ -148,6 +148,37 @@ The hardware sends swipe as `MotionEvent`, which is exactly what `GestureHandler
 
 ---
 
+## ✅ Input Refinements: Double Tap & Long Press - COMPLETED
+
+### Background
+Two input issues were identified during testing:
+
+1. **Double tap (KEYCODE_BACK) was exiting the app regardless of game state.** The `onBackPressed()` override was being bypassed by `AppCompatActivity`'s back press dispatcher, so the app always exited.
+2. **Long press was unsupported.** The hardware cannot emit a long press gesture natively.
+
+### Changes made
+
+**Double tap remapped to single tap**
+`KEYCODE_BACK` is now handled in `onKeyDown` and calls `engine.onTap()`, identical to `KEYCODE_ENTER`. Accidental double taps during rapid rotation no longer exit the app.
+
+**Long press emulated via hold duration**
+`KEYCODE_ENTER` now fires on key-up instead of key-down. If held ≥ 3 seconds, it calls `engine.onLongPress()` (return to menu); shorter presses call `engine.onTap()` as before.
+
+### Input mapping (updated)
+
+| Gesture | Key | Action |
+|---------|-----|--------|
+| Swipe left | `KEYCODE_DPAD_LEFT` | Move piece left |
+| Swipe right | `KEYCODE_DPAD_RIGHT` | Move piece right |
+| Single tap | `KEYCODE_ENTER` (< 3s) | Rotate / Start / Restart |
+| Long press | `KEYCODE_ENTER` (≥ 3s) | Return to menu |
+| Double tap | `KEYCODE_BACK` | Same as single tap |
+
+### Files changed
+- `MainActivity.kt` — `KEYCODE_BACK` → `onTap()`; `KEYCODE_ENTER` moved to `onKeyUp` with hold-duration check; removed `onBackPressed` override
+
+---
+
 ## ✅ Difficulty Levels - COMPLETED
 
 ### Completed Tasks
@@ -208,4 +239,4 @@ app/src/test/java/com/arglass/tetris/game/
 - **Target SDK**: Android 9 (API 28)
 
 ## Last Updated
-2026-03-01 - Added Easy / Medium / Hard difficulty levels; DPAD key support in MainActivity
+2026-03-01 - Double tap remapped to single tap; long press (3s hold) added to return to menu
