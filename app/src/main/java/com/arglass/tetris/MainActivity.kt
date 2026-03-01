@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
-import android.view.MotionEvent
+// import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
 import com.arglass.tetris.game.GameEngine
-import com.arglass.tetris.input.GestureHandler
+// import com.arglass.tetris.input.GestureHandler
 import com.arglass.tetris.views.TetrisView
 
 /**
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var tetrisView: TetrisView
     private lateinit var engine: GameEngine
-    private lateinit var gestureHandler: GestureHandler
+    // private lateinit var gestureHandler: GestureHandler
 
     private val handler = Handler(Looper.getMainLooper())
     private val frameIntervalMs = 33L  // ~30 FPS
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         engine = GameEngine()
-        gestureHandler = GestureHandler(this, engine)
+        // gestureHandler = GestureHandler(this, engine)
 
         tetrisView = findViewById(R.id.tetrisView)
         tetrisView.engine = engine
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        return gestureHandler.onTouchEvent(event) || super.onTouchEvent(event)
-    }
+    // override fun onTouchEvent(event: MotionEvent): Boolean {
+    //     return gestureHandler.onTouchEvent(event) || super.onTouchEvent(event)
+    // }
 }
