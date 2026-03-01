@@ -3,6 +3,7 @@ package com.arglass.tetris
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.KeyEvent
 // import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
@@ -15,8 +16,10 @@ import com.arglass.tetris.views.TetrisView
  * Target: Android 9 (API 28) AR Glasses — 640×480 grayscale display.
  *
  * Game loop: 30 FPS using a Handler-based repeating tick.
- * Input:     KeyEvents (DPAD_LEFT/RIGHT, KEYCODE_ENTER, KEYCODE_BACK) forwarded to GameEngine.
- * Long press: KEYCODE_ENTER held ≥ 3 s is treated as long press (return to menu).
+ * Input:     KeyEvents (DPAD_LEFT/RIGHT, KEYCODE_ENTER, KEYCODE_BACK, KEYCODE_VOLUME_DOWN)
+ *            forwarded to GameEngine.
+ * Long press: KEYCODE_VOLUME_DOWN → return to menu.
+ * Double tap: KEYCODE_BACK in MENU state → exit app.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -28,8 +31,6 @@ class MainActivity : AppCompatActivity() {
     private val frameIntervalMs = 33L  // ~30 FPS
 
     private var lastTickMs = 0L
-    private var enterKeyDownTimeMs = 0L
-    private val longPressThresholdMs = 3000L
 
     private val gameLoopRunnable = object : Runnable {
         override fun run() {
@@ -69,21 +70,26 @@ class MainActivity : AppCompatActivity() {
             KeyEvent.KEYCODE_DPAD_LEFT  -> { engine.onSwipeLeft(); true }
             KeyEvent.KEYCODE_DPAD_RIGHT -> { engine.onSwipeRight(); true }
             KeyEvent.KEYCODE_ENTER      -> {
-                if (event.repeatCount == 0) enterKeyDownTimeMs = System.currentTimeMillis()
+                if (event.repeatCount == 0) { Log.d("Input", "ENTER -> onTap"); engine.onTap() }
                 true
             }
-            KeyEvent.KEYCODE_BACK       -> { engine.onTap(); true }
+            KeyEvent.KEYCODE_VOLUME_DOWN -> { Log.d("Input", "VOLUME_DOWN -> onLongPress"); engine.onLongPress(); true }
+            KeyEvent.KEYCODE_BACK       -> {
+                if (engine.state == GameEngine.State.MENU) { Log.d("Input", "BACK in MENU -> finish"); finish() }
+                else { Log.d("Input", "BACK -> onTap"); engine.onTap() }
+                true
+            }
             else -> super.onKeyDown(keyCode, event)
         }
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         return when (keyCode) {
-            KeyEvent.KEYCODE_ENTER -> {
-                val held = System.currentTimeMillis() - enterKeyDownTimeMs
-                if (held >= longPressThresholdMs) engine.onLongPress() else engine.onTap()
-                true
-            }
+//            KeyEvent.KEYCODE_ENTER -> {
+//                val held = System.currentTimeMillis() - enterKeyDownTimeMs
+//                if (held >= longPressThresholdMs) engine.onLongPress() else engine.onTap()
+//                true
+//            }
             else -> super.onKeyUp(keyCode, event)
         }
     }

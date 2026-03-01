@@ -15,10 +15,11 @@ A simple Tetris game designed for AR glasses with grayscale display and touch se
 - **Display**: 640x480 Grayscale (green tinted)
 - **Frame Rate**: 30 FPS
 - **Input Methods**:
-  - DPAD Left/Right: Move tetromino
+  - DPAD Left/Right: Move tetromino / navigate difficulty (in menu)
   - Single Tap (KEYCODE_ENTER): Rotate tetromino / Start game
-  - Double Tap (KEYCODE_BACK): Also treated as single tap (rotate / start)
-  - Long Press (KEYCODE_ENTER held ≥ 3s): Return to menu (when playing)
+  - Double Tap (KEYCODE_BACK): Rotate / Start (during play); Exit app (in menu)
+  - Volume Down (KEYCODE_VOLUME_DOWN): Return to menu (when playing)
+  - Note: Hardware long press is **not supported** — the touch sensor always emits DOWN+UP ~48ms apart regardless of hold duration. Use Volume Down instead.
 
 ## Setup Instructions
 
@@ -85,11 +86,15 @@ All input is delivered as `KeyEvent`s by the AR glasses hardware — there is no
 
 | Key | Action |
 |-----|--------|
-| DPAD Left | Move piece left |
-| DPAD Right | Move piece right |
-| KEYCODE_ENTER (tap) | Rotate piece / Start game / Restart |
-| KEYCODE_ENTER (hold ≥ 3s) | Return to menu (during play) |
-| KEYCODE_BACK (double tap) | Same as single tap (rotate / start) |
+| DPAD Left | Move piece left / Previous difficulty (menu) |
+| DPAD Right | Move piece right / Next difficulty (menu) |
+| KEYCODE_ENTER (single tap) | Rotate piece / Start game / Restart |
+| KEYCODE_VOLUME_DOWN | Return to menu (during play) |
+| KEYCODE_BACK (double tap) | Rotate / Start (during play); Exit app (in menu) |
+
+> **Hardware note**: Long press via KEYCODE_ENTER is not supported. The touch sensor
+> always emits DOWN+UP ~48ms apart regardless of how long you physically hold.
+> Volume Down is used as the long press substitute.
 
 ## Game Features
 - Standard Tetris gameplay (10x20 board)
