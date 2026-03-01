@@ -148,6 +148,21 @@ The hardware sends swipe as `MotionEvent`, which is exactly what `GestureHandler
 
 ---
 
+## ✅ Difficulty Levels - COMPLETED
+
+### Completed Tasks
+- [x] Add `Level` enum to `GameEngine` (EASY 1000ms, MEDIUM 500ms, HARD 333ms drop interval)
+- [x] Cycle selected level with swipe left/right in MENU state
+- [x] Menu screen shows `< EASY  MEDIUM  HARD >` with active level in white, inactive dimmed
+- [x] Add `DPAD_LEFT` / `DPAD_RIGHT` key handlers in `MainActivity` for hardware button support
+
+### Files Changed
+- `game/GameEngine.kt` — `Level` enum, level-aware drop timing, menu swipe handling
+- `views/TetrisView.kt` — difficulty selector UI in `drawMenu`
+- `MainActivity.kt` — `DPAD_LEFT` / `DPAD_RIGHT` key handlers
+
+---
+
 ## 📋 Phase 7: Testing & Deployment - PENDING
 
 ### Tasks to Complete
@@ -160,8 +175,8 @@ The hardware sends swipe as `MotionEvent`, which is exactly what `GestureHandler
 ---
 
 ## Current Status
-**Phase**: 6 of 7 complete
-**Status**: ✅ Fully playable — ready for device testing
+**Phase**: 6 of 7 complete (+ input fix + difficulty levels)
+**Status**: ✅ Fully playable with Easy / Medium / Hard difficulty — ready for device testing
 **Next Step**: Phase 7 — build APK and test on emulator / AR glasses
 
 ## Project Structure
@@ -193,4 +208,4 @@ app/src/test/java/com/arglass/tetris/game/
 - **Target SDK**: Android 9 (API 28)
 
 ## Last Updated
-2026-03-01 - Fixed input algorithm for AR glasses hardware (KEYCODE_ENTER / KEYCODE_BACK)
+2026-03-01 - Added Easy / Medium / Hard difficulty levels; DPAD key support in MainActivity
