@@ -16,9 +16,9 @@ import com.arglass.tetris.views.TetrisView
  * Target: Android 9 (API 28) AR Glasses — 640×480 grayscale display.
  *
  * Game loop: 30 FPS using a Handler-based repeating tick.
- * Input:     KeyEvents (DPAD_LEFT/RIGHT, KEYCODE_ENTER, KEYCODE_BACK, KEYCODE_VOLUME_DOWN)
+ * Input:     KeyEvents (DPAD_LEFT/RIGHT, KEYCODE_ENTER, KEYCODE_BACK, KEYCODE_MENU)
  *            forwarded to GameEngine.
- * Long press: KEYCODE_VOLUME_DOWN → return to menu.
+ * Long press: KEYCODE_MENU (82) → return to menu.
  * Double tap: KEYCODE_BACK in MENU state → exit app.
  */
 class MainActivity : AppCompatActivity() {
@@ -73,7 +73,8 @@ class MainActivity : AppCompatActivity() {
                 if (event.repeatCount == 0) { Log.d("Input", "ENTER -> onTap"); engine.onTap() }
                 true
             }
-            KeyEvent.KEYCODE_VOLUME_DOWN -> { Log.d("Input", "VOLUME_DOWN -> onLongPress"); engine.onLongPress(); true }
+            KeyEvent.KEYCODE_MENU        -> { Log.d("Input", "MENU -> onHardDrop"); engine.onHardDrop(); true }
+            124                          -> { Log.d("Input", "124 -> returnToMenu"); engine.returnToMenu(); true }
             KeyEvent.KEYCODE_BACK       -> {
                 if (engine.state == GameEngine.State.MENU) { Log.d("Input", "BACK in MENU -> finish"); finish() }
                 else { Log.d("Input", "BACK -> onTap"); engine.onTap() }

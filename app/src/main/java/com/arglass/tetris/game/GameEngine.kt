@@ -96,8 +96,20 @@ class GameEngine {
         }
     }
 
-    fun onLongPress() {
-        if (state == State.PLAYING) returnToMenu()
+    fun onHardDrop() {
+        if (state != State.PLAYING) return
+        val piece = activePiece ?: return
+        var dropped = piece
+        var rows = 0
+        while (true) {
+            val next = dropped.movedBy(dRow = 1, dCol = 0)
+            if (!board.isValidPosition(next)) break
+            dropped = next
+            rows++
+        }
+        scoreManager.addSoftDrop(rows)
+        activePiece = dropped
+        lockPiece(dropped)
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -119,17 +131,21 @@ class GameEngine {
         val moved = piece.movedBy(dRow = 1, dCol = 0)
         if (board.isValidPosition(moved)) {
             activePiece = moved
+            onBoardChanged?.invoke()
         } else {
-            // Lock the piece, clear lines, spawn next
-            board.placeTetromino(piece)
-            val cleared = board.clearLines()
-            if (cleared > 0) scoreManager.addLinesCleared(cleared)
-            if (board.isGameOver()) {
-                state = State.GAME_OVER
-                activePiece = null
-            } else {
-                spawnNext()
-            }
+            lockPiece(piece)
+        }
+    }
+
+    private fun lockPiece(piece: Tetromino) {
+        board.placeTetromino(piece)
+        val cleared = board.clearLines()
+        if (cleared > 0) scoreManager.addLinesCleared(cleared)
+        if (board.isGameOver()) {
+            state = State.GAME_OVER
+            activePiece = null
+        } else {
+            spawnNext()
         }
         onBoardChanged?.invoke()
     }

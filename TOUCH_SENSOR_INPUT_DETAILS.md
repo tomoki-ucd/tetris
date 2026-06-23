@@ -12,7 +12,7 @@ adb shell getevent -l
 #   name: "iqs7211e_keys"
 ```
 
-The volume down button is a separate physical key routed through `gpio-keys`:
+The volume down/up buttons and the right arm button are separate physical keys routed through `gpio-keys`:
 ```bash
 # add device 4: /dev/input/event1
 #   name: "gpio-keys"
@@ -20,15 +20,19 @@ The volume down button is a separate physical key routed through `gpio-keys`:
 
 ## Input Mapping
 
-| Physical gesture | Kernel event | Linux keycode | Android keycode |
-|---|---|---|---|
-| Swipe right | `KEY_RIGHT` | 106 | `KEYCODE_DPAD_RIGHT` |
-| Swipe left | `KEY_LEFT` | 105 | `KEYCODE_DPAD_LEFT` |
-| Swipe up | nothing | — | — |
-| Swipe down | nothing | — | — |
-| Single tap | `KEY_ENTER` | 28 | `KEYCODE_ENTER` |
-| Double tap | `KEY_BACK` | 158 | `KEYCODE_BACK` |
-| Volume down button | `KEY_VOLUMEDOWN` | — | `KEYCODE_VOLUME_DOWN` (from `/dev/input/event1` `gpio-keys`, not touch sensor) |
+| Physical gesture / button | Source | Kernel event | Linux keycode | Android keycode |
+|---|---|---|---|---|
+| 1-finger swipe forward | touchpad (`iqs7211e_keys`) | `KEY_RIGHT` | 106 | `KEYCODE_DPAD_RIGHT` (22) |
+| 1-finger swipe backward | touchpad (`iqs7211e_keys`) | `KEY_LEFT` | 105 | `KEYCODE_DPAD_LEFT` (21) |
+| Swipe up | touchpad | nothing | — | — (disabled at firmware level) |
+| Swipe down | touchpad | nothing | — | — (disabled at firmware level) |
+| Single tap | touchpad (`iqs7211e_keys`) | `KEY_ENTER` | 28 | `KEYCODE_ENTER` (66) |
+| Double tap | touchpad (`iqs7211e_keys`) | `KEY_BACK` | 158 | `KEYCODE_BACK` (4) |
+| Triple tap | touchpad (`iqs7211e_keys`) | — | — | `KEYCODE_HENKAN` (214) |
+| Long press | touchpad (`iqs7211e_keys`) | — | — | `KEYCODE_MENU` (82) — firmware-detected; see note below |
+| 2-finger swipe forward | touchpad (`iqs7211e_keys`) | `KEY_VOLUMEDOWN` | — | `KEYCODE_VOLUME_DOWN` (25) |
+| 2-finger swipe backward | touchpad (`iqs7211e_keys`) | `KEY_VOLUMEUP` | — | `KEYCODE_VOLUME_UP` (24) |
+| Right arm button | `gpio-keys` | `KEY_VOLUMEDOWN` | — | KeyCode 124 |
 
 Key layout mapping source: `/system/usr/keylayout/Generic.kl`
 (No device-specific `.kl` file exists for `iqs7211e_keys`)
@@ -73,15 +77,15 @@ override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
 - `onKeyDown` fires when the DOWN event arrives (touch begins)
 - `onKeyUp` fires when the UP event arrives (touch ends)
 - For a simple tap action, triggering on `onKeyUp` is conventional (consistent with button click behavior)
-- For a simple tap action, triggering on `onKeyUp` is conventional (consistent with button click behavior)
 
-## Long Press — Not Supported
+## Long Press
 
-**The hardware does not support long press detection via `KEYCODE_ENTER`.**
+**Long press cannot be detected via `KEYCODE_ENTER` hold duration.**
 
 Measured via logcat: the touch sensor always emits DOWN+UP approximately **48ms apart**,
 regardless of how long the user physically holds the sensor. The UP event fires immediately
-after DOWN at the firmware level — there is no way to distinguish a short tap from a long hold.
+after DOWN at the firmware level — there is no way to distinguish a short tap from a long hold
+using `onKeyDown`/`onKeyUp` timing.
 
 ```
 # Every "hold" looks identical to a tap in the logs:
@@ -89,5 +93,10 @@ D Input: ENTER DOWN at 1772377969724
 D Input: ENTER UP held=48ms   ← always ~48ms, even after holding for seconds
 ```
 
-**Workaround**: Use `KEYCODE_VOLUME_DOWN` as the long press substitute.
-It is a separate physical button and delivers a reliable, distinct input signal.
+**However**, the touchpad firmware detects long press independently and emits `KEYCODE_MENU` (82)
+directly — confirmed by the device SDK documentation (长按事件: KEYCODE_MENU = 82).
+This is a firmware-level gesture, not derived from KEY_ENTER hold duration.
+
+**Caveat**: The OS-level documentation lists long press as 未登録 (unregistered) and states it
+launches the system app launcher. It is unclear whether `KEYCODE_MENU` reaches foreground apps
+reliably or is intercepted by the OS. **Test on device to confirm.**

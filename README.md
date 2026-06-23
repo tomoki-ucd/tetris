@@ -15,11 +15,11 @@ A simple Tetris game designed for AR glasses with grayscale display and touch se
 - **Display**: 640x480 Grayscale (green tinted)
 - **Frame Rate**: 30 FPS
 - **Input Methods**:
-  - DPAD Left/Right: Move tetromino / navigate difficulty (in menu)
+  - DPAD Left/Right (1-finger swipe): Move tetromino / navigate difficulty (in menu)
   - Single Tap (KEYCODE_ENTER): Rotate tetromino / Start game
   - Double Tap (KEYCODE_BACK): Rotate / Start (during play); Exit app (in menu)
-  - Volume Down (KEYCODE_VOLUME_DOWN): Return to menu (when playing)
-  - Note: Hardware long press is **not supported** — the touch sensor always emits DOWN+UP ~48ms apart regardless of hold duration. Use Volume Down instead.
+  - Long Press (KEYCODE_MENU): Hard drop (instant piece drop)
+  - KeyCode 124 (right arm button): Return to Tetris menu
 
 ## Setup Instructions
 
@@ -84,17 +84,14 @@ See `DEVELOPMENT_PLAN.md` for detailed roadmap and `PROGRESS.md` for current sta
 
 All input is delivered as `KeyEvent`s by the AR glasses hardware — there is no touch/swipe handling.
 
-| Key | Action |
-|-----|--------|
-| DPAD Left | Move piece left / Previous difficulty (menu) |
-| DPAD Right | Move piece right / Next difficulty (menu) |
-| KEYCODE_ENTER (single tap) | Rotate piece / Start game / Restart |
-| KEYCODE_VOLUME_DOWN | Return to menu (during play) |
-| KEYCODE_BACK (double tap) | Rotate / Start (during play); Exit app (in menu) |
-
-> **Hardware note**: Long press via KEYCODE_ENTER is not supported. The touch sensor
-> always emits DOWN+UP ~48ms apart regardless of how long you physically hold.
-> Volume Down is used as the long press substitute.
+| Key | Gesture | Action |
+|-----|---------|--------|
+| KEYCODE_DPAD_LEFT (21) | 1-finger backward swipe | Move piece left / Previous difficulty (menu) |
+| KEYCODE_DPAD_RIGHT (22) | 1-finger forward swipe | Move piece right / Next difficulty (menu) |
+| KEYCODE_ENTER (66) | Single tap | Rotate piece / Start game / Restart |
+| KEYCODE_BACK (4) | Double tap | Rotate / Start (during play); Exit app (in menu) |
+| KEYCODE_MENU (82) | Long press | Hard drop (instant piece drop) |
+| KeyCode 124 | Right arm button | Return to Tetris menu |
 
 ## Game Features
 - Standard Tetris gameplay (10x20 board)
